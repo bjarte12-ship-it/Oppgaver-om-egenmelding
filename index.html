@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="nb"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Flashcards: Egenmelding</title>
+<style>
+:root{box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px);--bg:#f1f5f9;--fg:#12324a;--mut:#64748b;--card:#fff;--back:#12324a;--backfg:#fff;--acc:#e2711d;--teal:#0f7f7f;--chip:#e2e8f0}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#0d1b26;--fg:#e8f0f6;--mut:#94a3b8;--card:#17303f;--back:#0f7f7f;--chip:#1f3a4b}}
+:root[data-theme="dark"]{--bg:#0d1b26;--fg:#e8f0f6;--mut:#94a3b8;--card:#17303f;--back:#0f7f7f;--chip:#1f3a4b}
+html{scroll-padding-top:env(safe-area-inset-top,0px)}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--fg);font-family:system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;min-height:100vh;display:flex;flex-direction:column;align-items:center;padding:20px 16px}
+h1{font-size:1.3rem;margin:4px 0 2px}
+.sub{color:var(--mut);font-size:.9rem;margin:0 0 14px}
+.chips{display:flex;flex-wrap:wrap;gap:8px;justify-content:center;margin-bottom:16px;max-width:560px}
+.chip{border:0;background:var(--chip);color:var(--fg);padding:8px 14px;border-radius:99px;font-size:.85rem;cursor:pointer;font-weight:600}
+.chip.on{background:var(--acc);color:#fff}
+.bar{width:100%;max-width:420px;height:6px;background:var(--chip);border-radius:9px;overflow:hidden;margin-bottom:6px}
+.bar i{display:block;height:100%;background:var(--teal);transition:width .3s}
+.count{font-size:.8rem;color:var(--mut);margin-bottom:14px}
+.scene{width:100%;max-width:420px;height:320px;perspective:1200px;cursor:pointer}
+.card{position:relative;width:100%;height:100%;transition:transform .55s cubic-bezier(.2,.8,.2,1);transform-style:preserve-3d}
+.card.flip{transform:rotateY(180deg)}
+.face{position:absolute;inset:0;backface-visibility:hidden;-webkit-backface-visibility:hidden;border-radius:26px;padding:28px;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;box-shadow:0 18px 40px -12px rgba(18,50,74,.35)}
+.front{background:var(--card)}
+.backf{background:var(--back);color:var(--backfg);transform:rotateY(180deg)}
+.tag{position:absolute;top:18px;left:20px;font-size:.7rem;letter-spacing:.08em;text-transform:uppercase;font-weight:700;color:var(--acc)}
+.backf .tag{color:#fcd9b8}
+.term{font-size:2rem;font-weight:800;line-height:1.15}
+.hint{position:absolute;bottom:16px;font-size:.75rem;color:var(--mut)}
+.def{font-size:1.25rem;font-weight:600;margin:0 0 14px}
+.ex{font-size:1rem;opacity:.9;font-style:italic;margin:0}
+.btns{display:flex;gap:10px;margin-top:22px;flex-wrap:wrap;justify-content:center}
+.btn{border:0;padding:12px 20px;border-radius:14px;font-size:.95rem;font-weight:700;cursor:pointer;background:var(--card);color:var(--fg);box-shadow:0 4px 12px -4px rgba(0,0,0,.25)}
+.btn.p{background:var(--acc);color:#fff}
+</style></head><body>
+<h1>Egenmelding</h1>
+<p class="sub">Nivå A1/A2 · Trykk på kortet for å snu det</p>
+<div class="chips" id="chips"></div>
+<div class="bar"><i id="pb"></i></div>
+<div class="count" id="ct"></div>
+<div class="scene" id="scene"><div class="card" id="card">
+<div class="face front"><span class="tag" id="t1"></span><div class="term" id="term"></div><span class="hint">Trykk for å se svaret</span></div>
+<div class="face backf"><span class="tag" id="t2"></span><p class="def" id="def"></p><p class="ex" id="ex"></p></div>
+</div></div>
+<div class="btns"><button class="btn" id="prev">← Forrige</button><button class="btn" id="shuf">Bland</button><button class="btn p" id="next">Neste →</button></div>
+<script>
+var D=[
+["Ord","egenmelding","Du melder selv fra til arbeidsgiveren at du er syk.","Jeg bruker egenmelding i dag."],
+["Ord","sykmelding","Et papir fra legen som sier at du er syk.","Jeg trenger sykmelding fra legen."],
+["Ord","en lege","Et menneske som hjelper syke folk.","Jeg går til legen."],
+["Ord","arbeidsgiver","Personen eller firmaet som ansetter deg.","Jeg ringer arbeidsgiveren min."],
+["Ord","å melde fra","Å si fra at du ikke kommer på jobb.","Jeg melder fra til sjefen."],
+["Ord","å være borte","Å ikke være på jobb.","Jeg er borte fra jobb i dag."],
+["Ord","fravær","Når du ikke er på jobb.","Fraværet mitt er to dager."],
+["Ord","en kollega","En person du jobber sammen med.","Kollegaen min er også syk."],
+["Å være syk","å være syk","Du føler deg dårlig og kan ikke jobbe.","Jeg er syk i dag."],
+["Å være syk","feber","Du har varm kropp og er sliten.","Jeg har feber."],
+["Å være syk","hodepine","Du har vondt i hodet.","Jeg har hodepine."],
+["Å være syk","forkjølelse","Du har snue og hoste.","Hun har forkjølelse."],
+["Å være syk","å hvile","Å ligge og slappe av for å bli frisk.","Jeg blir hjemme og hviler."],
+["Å være syk","God bedring!","Du sier dette til en person som er syk.","Sjefen sier: «God bedring!»"],
+["Regler","tre dager om gangen","Du kan bruke egenmelding i inntil tre dager.","Jeg er syk mandag til onsdag."],
+["Regler","to måneder i jobb","Du må ha jobbet hos arbeidsgiveren i to måneder.","Jeg har jobbet her i fem måneder."],
+["Regler","hele dager","Du kan bare bruke egenmelding for hele dager, ikke for halve.","Jeg er syk en hel dag."],
+["Regler","helgen teller med","Lørdag og søndag er også sykedager.","Fredag til mandag er fire dager."],
+["Regler","fjerde dag","Fra fjerde dag kan arbeidsgiveren kreve legeerklæring.","Jeg er syk i fire dager. Jeg går til legen."],
+["Regler","fire ganger","Du kan bruke egenmelding inntil fire ganger på 12 måneder.","Jeg har brukt egenmelding to ganger i år."],
+["Regler","16 dager","Etter tre dager egenmelding må du jobbe i 16 dager før du kan bruke den igjen.","Jeg må jobbe 16 dager først."],
+["Regler","egne regler","Noen arbeidsplasser gir flere dager. Spør arbeidsgiveren din.","Min arbeidsplass har egne regler."],
+["Å si fra","Jeg er syk i dag.","Slik sier du at du er syk.","Hei, jeg er syk i dag."],
+["Å si fra","Jeg kommer ikke på jobb.","Slik sier du at du ikke kommer.","Jeg kommer ikke på jobb i dag."],
+["Å si fra","Jeg bruker egenmelding.","Slik sier du at du bruker egenmelding.","Jeg bruker egenmelding i to dager."],
+["Å si fra","Jeg har feber.","Slik sier du hvorfor du er syk.","Jeg har feber og vondt i hodet."],
+["Å si fra","Jeg kommer tilbake på ...","Slik sier du når du er på jobb igjen.","Jeg kommer tilbake på torsdag."]
+];
+var cats=["Alle"].concat(D.map(function(d){return d[0]}).filter(function(v,i,a){return a.indexOf(v)===i}));
+var cur="Alle",deck=[],i=0;
+var $=function(id){return document.getElementById(id)};
+function build(){deck=D.filter(function(d){return cur==="Alle"||d[0]===cur});i=0;show()}
+function show(){var d=deck[i];$("card").classList.remove("flip");
+setTimeout(function(){$("t1").textContent=d[0];$("t2").textContent=d[0];$("term").textContent=d[1];$("def").textContent=d[2];$("ex").textContent="«"+d[3]+"»"},120);
+$("ct").textContent=(i+1)+" / "+deck.length;$("pb").style.width=((i+1)/deck.length*100)+"%"}
+function chips(){$("chips").innerHTML="";cats.forEach(function(c){var b=document.createElement("button");b.className="chip"+(c===cur?" on":"");b.textContent=c;b.onclick=function(){cur=c;chips();build()};$("chips").appendChild(b)})}
+$("scene").onclick=function(){$("card").classList.toggle("flip")};
+$("next").onclick=function(){i=(i+1)%deck.length;show()};
+$("prev").onclick=function(){i=(i-1+deck.length)%deck.length;show()};
+$("shuf").onclick=function(){for(var k=deck.length-1;k>0;k--){var j=Math.floor(Math.random()*(k+1));var t=deck[k];deck[k]=deck[j];deck[j]=t}i=0;show()};
+chips();build();
+</script></body></html>
