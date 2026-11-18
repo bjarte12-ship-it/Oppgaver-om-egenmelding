@@ -1,1 +1,1 @@
-Enkle ord og begreper om egenmelding. Testet ok.
+Enkle ord og begreper om egenmelding. Vendbare kort m/forklaring. Testet ok.
